@@ -232,7 +232,7 @@ export default function CatalogoPatos() {
       <header className="sticky top-0 z-10 border-b shadow-md" style={{ backgroundColor: colors.lighter }}>
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">a
               <Image
                 src="/inicio/logo_solo.png?height=40&width=40"
                 alt="Logo"
