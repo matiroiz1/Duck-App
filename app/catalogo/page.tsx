@@ -14,6 +14,8 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog"
+import { useIsMobile } from '@/components/ui/use-mobile'; // Importa el hook
+
 
 // Definición de tipos para los patos
 interface Duck {
@@ -226,37 +228,56 @@ export default function CatalogoPatos() {
     deepest: "#401808", // 950
   }
 
+const Navbar = () => {
+  const isMobile = useIsMobile();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const navLinks = [
+    { id: "inicio", label: "Inicio" },
+    { id: "caracteristicas", label: "Características" },
+    { id: "especies", label: "Especies" },
+    { id: "contacto", label: "Contacto" },
+  ];
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      console.error(`Element with id ${id} not found`);
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen" id="inicio" style={{ backgroundColor: colors.lightest }}>
-      {/* Barra de Navegación */}
-      <header className="sticky top-0 z-10 border-b shadow-md" style={{ backgroundColor: colors.lighter }}>
-        <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">a
-              <Image
-                src="/inicio/logo_solo.png?height=40&width=40"
-                alt="Logo"
-                width={40}
-                height={40}
-                className="rounded-full"
-              />
-              <h1 className="text-xl font-bold" style={{ color: colors.darkest }}>
-                Duck App
-              </h1>
-            </div>
+    <header className="sticky top-0 z-10 border-b shadow-md" style={{ backgroundColor: colors.lighter }}>
+      <div className="container mx-auto px-4 py-3">
+        <nav className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Image
+              src="/inicio/logo_solo.png?height=40&width=40"
+              alt="Logo"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+            <h1 className="text-xl font-bold" style={{ color: colors.darkest }}>
+              Duck App
+            </h1>
+          </div>
+          {/* Menú para pantallas NO móviles */}
+          {!isMobile && (
             <div className="hidden md:flex items-center space-x-8">
-              {[
-                { id: "inicio", label: "Inicio" },
-                { id: "caracteristicas", label: "Características" },
-                { id: "especies", label: "Especies" },
-                { id: "contacto", label: "Contacto" },
-              ].map((link) => (
+              {navLinks.map((link) => (
                 <a
                   key={link.id}
                   href={`#${link.id}`}
                   onClick={(e) => {
-                    e.preventDefault()
-                    scrollToSection(link.id)
+                    e.preventDefault();
+                    scrollToSection(link.id);
                   }}
                   className="text-sm font-bold transition duration-300 ease-in-out hover:text-[#EBAE34] hover:underline underline-offset-4 cursor-pointer"
                   style={{ color: colors.darker }}
@@ -265,21 +286,55 @@ export default function CatalogoPatos() {
                 </a>
               ))}
             </div>
+          )}
+
+          {/* Botón para abrir el menú en pantallas móviles */}
+          {isMobile && (
             <Button
               variant="outline"
               size="icon"
+              onClick={toggleMobileMenu}
               className="md:hidden"
               style={{ color: colors.darker, borderColor: colors.medium }}
             >
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
             </Button>
-          </nav>
-        </div>
-      </header>
+          )}
 
+          {/* Menú desplegable para pantallas móviles */}
+          {isMobile && isMobileMenuOpen && (
+            <div className="absolute top-full left-0 w-full bg-white shadow-md rounded-md mt-1 z-20">
+              <ul className="py-2">
+                {navLinks.map((link) => (
+                  <li key={link.id}>
+                    <a
+                      href={`#${link.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection(link.id);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+};
+
+  return (
+    <div id="inicio">
+      <Navbar/>
       <main className="flex-1">
         {/* Sección de Encabezado */}
-        <section className="py-12" style={{ backgroundColor: colors.light }}>
+        <section  className="py-12" style={{ backgroundColor: colors.light }}>
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-4" style={{ color: colors.darkest }}>
               Catálogo de Patos Argentinos
@@ -290,6 +345,7 @@ export default function CatalogoPatos() {
             </p>
           </div>
         </section>
+
 
         {/* Sección Principal Destacada */}
         <section className="py-12" style={{ backgroundColor: colors.lighter }}>
@@ -494,6 +550,7 @@ export default function CatalogoPatos() {
             )}
           </div>
         </section>
+
 
         {/* Sección de Lista de Portafolio */} 
         <section className="py-12" id="especies" style={{ backgroundColor: colors.lighter, paddingTop: '100px'}}>
